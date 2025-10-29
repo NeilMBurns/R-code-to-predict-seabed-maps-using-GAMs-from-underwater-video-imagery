@@ -38,11 +38,11 @@ The repository does **not** include the raw video data but provides all scripts 
 ```
 
 Wester_Ross_seabed_map/
-├── data/                # Directory for input data (empty by default)
-├── scripts/             # Core R scripts for data cleaning, analysis, and mapping
-├── outputs/             # Figures, maps, or model outputs
-├── README.md            # Project overview (this file)
-└── LICENSE              # License information
+├── data/ # Directory for input data (empty by default)
+├── scripts/ # Core R scripts for data cleaning, analysis, and mapping
+├── outputs/ # Figures, maps, or model outputs
+├── README.md # Project overview (this file)
+└── LICENSE # License information
 
 ````
 
