@@ -43,6 +43,15 @@ Wester_Ross_seabed_map/
 ├── outputs/ # Figures, maps, or model outputs
 ├── README.md # Project overview (this file)
 └── LICENSE # License information
+```
+.
+├── Data/                              # CSV data files for species presence (link supplied)
+  └── GIS_Data                         # Sample location metadata, environmental covariates and files used for mapping (link supplied)
+├── LICENSE 
+├── README.md
+└── Temperate_elasmobranchs.Rmd        # Master RMarkdown script for entire analysis workflow
+```
+
 
 ````
 
