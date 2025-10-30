@@ -1,10 +1,10 @@
 
-# 📄 Conservation Relevant Fine-Scale Distribution and Habitat Associations of Threatened Elasmobranchs in Temperate Nearshore Waters
+# 📄 Predicting seabed maps from underwater video imagery using GAMs in a Scottish Sea Loch
 
-Repository containing analysis code, data, and supplementary materials supporting the paper:
+Repository containing analysis code, and links to the data supporting the paper:
 
-**Conservation Relevant Fine-Scale Distribution and Habitat Associations of Threatened Elasmobranchs in Temperate Nearshore Waters**  
-Hopkins, C.R., Cullen, G., Flatt, R.L., Brooker, E.E., Bailey, D.M., and Burns, N.M.  
+**Predicting seabed maps from underwater video imagery using GAMs in a Scottish Sea Loch**  
+Burns, N.M., Bailey, D.M. and Hopkins, C.R.   
 Submitted to *[Journal]*, 2025  
 [DOI to follow]
 
@@ -12,7 +12,7 @@ Submitted to *[Journal]*, 2025
 
 ## 📑 Abstract
 
-This study examined elasmobranch species richness, abundance and habitat associations in Scottish nearshore waters using Stereo Baited Remote Underwater Video Systems (SBRUVs) between 2021–2023. Bayesian hierarchical spatial models fitted with INLA were used to quantify the influence of depth, substratum, and spatial autocorrelation on species presence for key threatened species. Findings provide new conservation-relevant data on distribution patterns and habitat preferences of elasmobranchs, including flapper skate (*Dipturus intermedius*), spiny dogfish (*Squalus acanthias*), and porbeagle (*Lamna nasus*).
+These data include geolocated seabed classifications identified from Stereo Baited Remote Underwater Video (SBRUV) camera deployments in Little ...
 
 ---
 
@@ -20,12 +20,12 @@ This study examined elasmobranch species richness, abundance and habitat associa
 
 ```
 .
-├── data/                      # CSV data files for species presence and environmental covariates
-├── Scotland_sharks.Rmd        # Master RMarkdown script for entire analysis workflow
-├── figures/                   # Model outputs, maps and summary figures
+├── data/                          # CSV data files for seabed classifications and bathymetry files
+├── GAM_predicted_seabed_maps.Rmd  # Master RMarkdown script for entire analysis workflow
+├── figures/                       # Model outputs, maps and summary figures
 ├── LICENSE
 ├── README.md
-└── requirements.txt           # List of R packages for reproducibility
+└── requirements.txt               # List of R packages for reproducibility
 ```
 
 ---
@@ -34,26 +34,26 @@ This study examined elasmobranch species richness, abundance and habitat associa
 
 ### 1️⃣ Clone this repository:
 ```bash
-git clone https://github.com/NeilMBurns/Temperate_Elasmobranchs.git
-cd Temperate_Elasmobranchs
+git clone https://github.com/NeilMBurns/Wester_Ross_seabed_map.git
+cd Wester_Ross_seabed_map
 ```
 
 ### 2️⃣ Install R dependencies:
 From within R:
 ```R
-install.packages(c("INLA", "fmesher", "sf", "terra", "vegan", "dagitty", "boot", "RColorBrewer", "tidyterra", "fields"))
+install.packages(c("sf", "flux", "RColorBrewer", "mgcv", "fields", "terra", "here", "dplyr", "rnaturalearth", "rnaturalearthdata", "prettymapr"))
 ```
 Optionally use `renv` or `packrat` for environment management.
 
-### 3️⃣ Open `Scotland_sharks.Rmd` in RStudio and Knit or run code chunks sequentially.
+### 3️⃣ Open `GAM_predicted_seabed_maps.Rmd` in RStudio and Knit or run code chunks sequentially.
 
 This script:
-- Reads and prepares elasmobranch presence-absence data
+- Reads and prepares the seabed classification data
 - Converts data to spatial objects
-- Summarises descriptive statistics and species richness by location and year
+- Summarises descriptive statistics
 - Loads environmental spatial layers
-- Fits spatial Bayesian models via R-INLA
-- Produces figures of species distribution, habitat associations and model predictions
+- Fits spatial GAMs
+- Produces figures of the probability of presence for seabed types, a combined seabed map and assesses model predictions with crossvalidation
 
 Outputs will be saved to the `figures/` directory.
 
@@ -62,7 +62,7 @@ Outputs will be saved to the `figures/` directory.
 ## 📊 Data Availability
 
 Code and anonymised data used to generate this manuscript’s analyses are available at:  
-👉 [https://github.com/NeilMBurns/Temperate_Elasmobranchs](https://github.com/NeilMBurns/Temperate_Elasmobranchs)  
+👉 [https://github.com/NeilMBurns/Wester_Ross_seabed_map](https://github.com/NeilMBurns/Wester_Ross_seabed_map)  
 A DOI will be issued via Figshare on publication.
 
 ---
@@ -81,14 +81,14 @@ You are free to use, share and adapt the materials, provided appropriate credit 
 If you use these materials, please cite:
 
 ```
-Hopkins, C.R., Cullen, G., Flatt, R.L., Brooker, E.E., Bailey, D.M., Burns, N.M. (2025). Conservation Relevant Fine-Scale Distribution and Habitat Associations of Threatened Elasmobranchs in Temperate Nearshore Waters. [Journal]. DOI to follow.
+Burns, N.M., Bailey, D.M. and Hopkins, C.R.  (2025). Predicting seabed maps from underwater video imagery using GAMs in a Scottish Sea Loch. [Journal]. DOI to follow.
 ```
 
 BibTeX:
 ```bibtex
-@article{hopkins2025elasmobranchs,
-  title={Conservation Relevant Fine-Scale Distribution and Habitat Associations of Threatened Elasmobranchs in Temperate Nearshore Waters},
-  author={Hopkins, C.R. and Cullen, G. and Flatt, R.L. and Brooker, E.E. and Bailey, D.M. and Burns, N.M.},
+@article{Burns2025sebedmap,
+  title={Predicting seabed maps from underwater video imagery using GAMs in a Scottish Sea Loch.},
+  author={Burns, N.M. and Bailey, D.M. and Hopkins, C.R.},
   journal={[Journal]},
   year={2025},
   doi={DOI to follow}
@@ -101,7 +101,7 @@ BibTeX:
 
 For questions, data access, or collaboration enquiries:
 
-- **Dr Neil M. Burns** — [your email]
+- **Dr Neil M. Burns** — [neil.burns@glasgow.ac.uk]
 - Or open an issue on this repository
 
 ---
