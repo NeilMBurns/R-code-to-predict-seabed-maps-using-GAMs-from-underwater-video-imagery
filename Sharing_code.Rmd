@@ -15,7 +15,7 @@ rm(list = ls())
 
 # Load required libraries
 library(sf)
-library(flux)
+library(MESS)
 library(RColorBrewer)
 library(mgcv)
 library(fields)
@@ -781,7 +781,7 @@ text(p.vals[best.overall]+0.05, acc.comb[best.overall]+0.05, labels=round(acc.co
 legend('bottomright', legend=substrata, fill=substratum_cols, bg='white')
 
 # AUC calculations
-auc.comb <- flux::auc(p.vals, acc.comb)
+auc.comb <- MESS::auc(p.vals, acc.comb, type = "linear")
 auc.indiv <- sapply(1:ncol(overall.acc), function(x) flux::auc(p.vals, overall.acc[,x]))
 
 # Best thresholds per substratum
