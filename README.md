@@ -1,9 +1,9 @@
 
-# 📄 Predicting seabed maps from underwater video imagery using GAMs in a Scottish Sea Loch
+# 📄 Dataset and R code to predict seabed maps using GAMs from underwater video imagery in a Scottish Sea Loch
 
 Repository containing analysis code, and links to the data supporting the paper:
 
-**Predicting seabed maps from underwater video imagery using GAMs in a Scottish Sea Loch**  
+**Predicting seabed maps using GAMs from underwater video imagery in a Scottish Sea Loch**  
 Burns, N.M., Bailey, D.M. and Hopkins, C.R.   
 Submitted to *[Journal]*, 2025  
 [DOI to follow]
