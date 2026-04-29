@@ -616,6 +616,7 @@ plot(rock.r, add=T, legend=FALSE, axes=FALSE, col=prob.heat(1000) )
 
 
 # K-fold cross validation
+## Code provided to split data into training and test sets for five folds across 100 CV iterations. Used to test the model "in-bag" prediction accuracy.
 ```{r}
 
 
@@ -624,7 +625,7 @@ K <- 5
 N <- 100
 first.run <- TRUE
 
-# Your k-fold splitting function (unchanged)
+# k-fold splitting function (unchanged)
 kfoldSplit <- function(x, k=K, train=TRUE){
   x <- sample(x, size = length(x), replace = FALSE)
   out <- suppressWarnings(split(x, factor(1:k)))
