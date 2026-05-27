@@ -1,5 +1,5 @@
 
-# 📄 Dataset and R code to predict seabed maps using GAMs from underwater video imagery in a Scottish Sea Loch
+# Dataset and R code to predict seabed maps using GAMs from underwater video imagery in a Scottish Sea Loch
 
 Repository containing analysis code, and links to the data supporting the paper:
 
@@ -10,13 +10,13 @@ Submitted to *[Journal]*, 2025
 
 ---
 
-## 📑 Abstract
+## Abstract
 
 These data include geolocated seabed classifications identified from Stereo Baited Remote Underwater Video (SBRUV) camera deployments in Little ...
 
 ---
 
-## 📂 Repository Structure
+## Repository Structure
 
 ```
 .
@@ -30,7 +30,7 @@ These data include geolocated seabed classifications identified from Stereo Bait
 
 ---
 
-## 📝 How to Reproduce the Analysis
+## How to Reproduce the Analysis
 
 ### 1️⃣ Clone this repository:
 ```bash
@@ -59,15 +59,15 @@ Outputs will be saved to the `figures/` directory.
 
 ---
 
-## 📊 Data Availability
+## Data Availability
 
 Code and anonymised data used to generate this manuscript’s analyses are available at:  
-👉 [https://github.com/NeilMBurns/Wester_Ross_seabed_map](https://github.com/NeilMBurns/Wester_Ross_seabed_map)  
+[https://github.com/NeilMBurns/Wester_Ross_seabed_map](https://github.com/NeilMBurns/Wester_Ross_seabed_map)  
 A DOI will be issued via Figshare on publication.
 
 ---
 
-## 📄 License
+## License
 
 - The code in this repository is released under the [MIT License](LICENSE).
 - The data provided is released under the [Creative Commons Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/) license.
@@ -76,7 +76,7 @@ You are free to use, share and adapt the materials, provided appropriate credit 
 
 ---
 
-## 📣 Citation
+## Citation
 
 If you use these materials, please cite:
 
@@ -97,7 +97,7 @@ BibTeX:
 
 ---
 
-## 📬 Contact
+## Contact
 
 For questions, data access, or collaboration enquiries:
 
