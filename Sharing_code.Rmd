@@ -10,7 +10,7 @@ editor_options:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 
-# Clear workspace
+
 rm(list = ls())
 
 # Load required libraries
@@ -26,19 +26,15 @@ library(rnaturalearth)
 library(rnaturalearthdata)
 library(prettymapr)
 
-# Confirm working directory
-getwd()
-# Save original par settings
 op <- par(no.readonly = TRUE)
 here::i_am("Sharing_code.Rmd")
 
 
- #########################################################Load Bathymetry and Survey Data
-# Load bathymetry raster
+######################################################### Load Bathymetry and Survey Data
+# Load bathymetry raster and define heatmap palette for depth
 depth <- rast(here("GIS_dat/WRoss_bathy.asc"))
 plot(depth, main = "Bathymetry")
 
-# Define heatmap palette for depth
 depth.heat <- colorRampPalette(rev(brewer.pal(9, 'Blues')[2:9]))
 
 # Load survey data
@@ -47,35 +43,24 @@ head(dat22)
 str(dat22)
 names(dat22)
 
-########################################################Subset and Recode Substratum Data
+######################################################### Subset and Recode Substratum Data
 
-# Subset to rows with primary substratum classified
 sub <- subset(dat22, Substratum1 != "")
 sub <- droplevels(sub)
 
-# Check structure
-str(sub)
-summary(sub)
+######################################################### Create Spatial Object for Camera Drops
 
-#######################################################Create Spatial Object for Camera Drops
-
-# Convert substratum columns to factors
+# Convert substratum columns to factors and set factor levels consistently
 sub$Substratum1 <- as.factor(sub$Substratum1)
 sub$Substratum2 <- as.factor(sub$Substratum2)
 sub$Substratum3 <- as.factor(sub$Substratum3)
 
-# Set factor levels consistently
 sub$Substratum1 <- factor(sub$Substratum1, 
                           levels = c("mud", "muddy_sand", "sand", "gravel", "cob_boulder", "rock"))
 sub$Substratum2 <- factor(sub$Substratum2, 
                           levels = c("mud", "muddy_sand", "sand", "gravel", "cob_boulder"))
 sub$Substratum3 <- factor(sub$Substratum3, 
                           levels = c("muddy_sand", "sand", "gravel", "cob_boulder"))
-
-# Summarise table counts
-table(sub$Substratum1)
-table(sub$Substratum2)
-table(sub$Substratum3)
 
 # Convert data to sf object (WGS84)
 sub.sf <- st_as_sf(sub, 
@@ -85,10 +70,8 @@ sub.sf <- st_as_sf(sub,
 # Reproject to British National Grid
 sub.sf <- st_transform(sub.sf, crs = "EPSG:27700")
 
-#################################################################### Load Land and Shoreline Polygons
+######################################################### Load Land and Shoreline Polygons
 
-
-# Load land and shoreline shapefiles
 land <- st_read(here("GIS_dat/boundaryline/scotland_and_wales_region.shp"))
 shore <- st_read(here("GIS_dat/boundaryline/high_water_polyline.shp"))
 
@@ -105,33 +88,24 @@ land.wr  <- st_crop(land, Wr.ext)
 
 ## Load 2023 Data
 ```{r load-2023-data}
-# Load 2023 survey data
+# Import and prepare 2023 survey data
 dat23 <- read.csv(here("cam_data/Wester_Ross_2023data.csv"))
 
-# Check data structure
-head(dat23)
-str(dat23)
-names(dat23)
 
-######################################################## Subset and Recode Substratum Data
+######################################################### Subset and Recode Substratum Data
 
 # Subset to records with Substratum1 classified
 sub23 <- dat23 %>%
   filter(dat23$Substratum1 != "") %>%
   droplevels()
 
-# Convert substratum columns to factors
+# Convert substratum to factors
 sub23$Substratum1 <- factor(sub23$Substratum1,
                             levels = c("mud", "muddy_sand", "sand", "gravel", "cob_boulder", "rock"))
 sub23$Substratum2 <- factor(sub23$Substratum2,
                             levels = c("mud", "muddy_sand", "sand", "gravel", "cob_boulder"))
 sub23$Substratum3 <- factor(sub23$Substratum3,
                             levels = c("muddy_sand", "cob_boulder"))
-
-# Summarise table counts
-table(sub23$Substratum1)
-table(sub23$Substratum2)
-table(sub23$Substratum3)
 
 ######################################################### Convert to Spatial Object
 
@@ -143,15 +117,14 @@ sub.sf23 <- st_as_sf(sub23,
 # Reproject to British National Grid
 sub.sf23 <- st_transform(sub.sf23, crs = "EPSG:27700")
 
-######################################################## Add National Grid Coordinates Back to Dataframe
+######################################################### Add National Grid Coordinates Back to Dataframe
 
-# Convert sf objects to data frames with National Grid x and y
 sub <- as.data.frame(sub.sf)
 sub23 <- as.data.frame(sub.sf23)
 
-######################################################## Define Colour Palettes for Prediction Maps
+######################################################### Define Colour Palettes for Prediction Maps
 
-# Define colour palettes for prediction heatmaps
+
 couls <- rev(brewer.pal(11, "Spectral"))
 couls <- c("#FFFFFF", couls)
 prob.heat <- colorRampPalette(couls)
@@ -160,18 +133,14 @@ prob.heat <- colorRampPalette(couls)
 
 ## Extract depths and add to survey data
 ```{r extract-depths}
-# Extract depth values for 2022 survey points
+# Extract depth for 2022
 depths <- extract(depth, sub.sf)
 
-# Rename extracted depth column
 names(depths) <- c("ID", "Depth")
 
 # Add depth values to spatial and data frame objects
 sub.sf <- cbind(sub.sf, Depth = depths$Depth)
 sub    <- cbind(sub,    Depth = depths$Depth)
-
-# Quick check
-head(depths)
 
 ```
 
@@ -190,7 +159,7 @@ plot_base_map <- function(depth, land, Wr.bound, depth_palette) {
 
 
 # Function to plot base map with no depth
-plot_land <- function( land, Wr.bound, depth_palette) {
+plot_land <- function( land, Wr.bound) {
   par(mar = c(0, 0, 0, 0) + 0.1)
   plot(st_geometry(land), col = NA, border = NA)
   rect(Wr.bound["xmin"], Wr.bound["ymin"], Wr.bound["xmax"], Wr.bound["ymax"], 
@@ -198,9 +167,6 @@ plot_land <- function( land, Wr.bound, depth_palette) {
   plot(st_geometry(land), add = TRUE, col = 'grey40', border = 'grey60')
   
 }
-
-
-
 
 
 # Function to plot substratum points for a given sf object
@@ -281,16 +247,14 @@ par(mar = c(1, 1, 1, 1))  # margins: bottom, left, top, right
 # Optional: save as PDF
 #pdf(here("figures/1_site_locations.pdf"), width = 5, height = 5)
 
-# Plot UK polygon
 plot(st_geometry(uk), col = "grey80", border = "black")
 plot(st_geometry(eir), col = "grey80", border = "black", add=T)
 
-# Add study site points
+
 plot(st_geometry(site), col = point_col, pch = 18, cex = 2, add=TRUE)
 
 addscalebar(plotepsg = 4326,  pos = "bottomright", widthhint =0.15)
 addnortharrow(pos = "topright", scale = 0.8)
-
 
 #dev.off()
 
@@ -304,13 +268,11 @@ par(mar = c(0, 0, 0, 0) + 0.1)
 
 
 # 
-# # Add 2022 survey points (deeppink4)
 # plot(st_geometry(sub.sf), add = TRUE, pch = 19, col = "deeppink4", cex = 1)
 # 
-# # Add 2023 survey points (blue4)
+#
 # plot(st_geometry(sub.sf23), add = TRUE, pch = 19, col = "blue4", cex = 1)
 
-# Optional: save as PDF
 # Plot for 2022 data
 plot_base_map(depth, land.wr, Wr.bound, depth.heat)
 plot_sub_points(sub.sf, substratum_cols)
@@ -334,7 +296,6 @@ plot(NULL ,xaxt='n',yaxt='n',bty='n',ylab='',xlab='', xlim=0:1, ylim=0:1)
 
 plot_sub_legend(substratum_cols)
 
-# Optional: close PDF device
 # dev.off()
  
  
@@ -347,21 +308,17 @@ plot(NULL ,xaxt='n',yaxt='n',bty='n',ylab='',xlab='', xlim=0:1, ylim=0:1)
 plot_depth_legend(depth, depth.heat)
 
 
-# Optional: close PDF device
 # dev.off()
 
-# Reset to original settings
 par(op)
 
 ```
 
 # Models
 
-
 ## Mud
 ```{r}
 
-### GAM_OK
 #For this we will not use any test/train partition but the entire dataset:
 
 # refit model to all
@@ -403,9 +360,6 @@ plot_land(land.wr, Wr.bound, depth.heat)
 
 plot(mud.r, add=T, legend=FALSE, axes=FALSE, col=prob.heat(1000) )
 
-
-
-# Optional: close PDF device
 # dev.off()
 
 
@@ -421,7 +375,6 @@ image.plot((mud.r), horizontal=T, smallplot= c(0.1, 0.9,0.6,0.63), col = prob.he
 at = c(0, 50, 100), labels =c("0","0.5","1.0"), 
 tcl=0.3, lwd=0.5, hadj=0.5), axes=F, zlim=c(0, 100))
 
-# Optional: close PDF device
 # dev.off()
 
 ```
@@ -429,7 +382,7 @@ tcl=0.3, lwd=0.5, hadj=0.5), axes=F, zlim=c(0, 100))
 ## Muddy_sand
 ```{r}
 
-### GAM_OK
+### GAM
 #For this we will not use any test/train partition but the entire dataset:
 
 # refit model to all
@@ -455,19 +408,15 @@ plot_land(land.wr, Wr.bound, depth.heat)
 
 plot(muddyS.r, add=T, legend=FALSE, axes=FALSE, col=prob.heat(1000) )
 
-# Optional: close PDF device
 # dev.off()
 
 
 ```
 
 ## sand
-
-
-
 ```{r}
 
-### GAM_OK
+### GAM
 #For this we will not use any test/train partition but the entire dataset:
 
 # refit model to all
@@ -491,8 +440,6 @@ plot_land(land.wr, Wr.bound, depth.heat)
 
 plot(sand.r, add=T, legend=FALSE, axes=FALSE, col=prob.heat(1000) )
 
-
-# Optional: close PDF device
 # dev.off()
 
 ```
@@ -501,7 +448,7 @@ plot(sand.r, add=T, legend=FALSE, axes=FALSE, col=prob.heat(1000) )
 ## gravel 
 ```{r}
 
-### GAM_OK
+### GAM
 #For this we will not use any test/train partition but the entire dataset:
 
 # refit model to all
@@ -527,9 +474,6 @@ plot_land(land.wr, Wr.bound, depth.heat)
 
 plot(gravel.r, add=T, legend=FALSE, axes=FALSE, col=prob.heat(1000) )
 
-
-
-# Optional: close PDF device
 # dev.off()
 
 ```
@@ -540,7 +484,7 @@ plot(gravel.r, add=T, legend=FALSE, axes=FALSE, col=prob.heat(1000) )
 ## Cob_boulder 
 ```{r}
 
-### GAM_OK
+### GAM
 #For this we will not use any test/train partition but the entire dataset:
 
 # refit model to all
@@ -566,10 +510,6 @@ plot_land(land.wr, Wr.bound, depth.heat)
 
 plot(cob.r, add=T, legend=FALSE, axes=FALSE, col=prob.heat(1000) )
 
-
-
-
-# Optional: close PDF device
 # dev.off()
 
 
@@ -579,11 +519,10 @@ plot(cob.r, add=T, legend=FALSE, axes=FALSE, col=prob.heat(1000) )
 ## rock 
 ```{r}
 
-### GAM_OK
+### GAM
 #For this we will not use any test/train partition but the entire dataset:
 
 # refit model to all
-
 
 GAM1 <- gam(formula = rock ~  s(Longitude, Latitude)+ s(Depth), data = sub, family = binomial)
 
@@ -606,14 +545,11 @@ plot_land(land.wr, Wr.bound, depth.heat)
 
 plot(rock.r, add=T, legend=FALSE, axes=FALSE, col=prob.heat(1000) )
 
-# Optional: close PDF device
 # dev.off()
 
 
 
 ```
-
-
 
 # K-fold cross validation
 ## Code provided to split data into training and test sets for five folds across 100 CV iterations. Used to test the model "in-bag" prediction accuracy.
@@ -638,7 +574,7 @@ kfolds <- kfoldSplit(1:nrow(sub), k = K, train = TRUE)
 # Sediment types
 sediments <- c("mud", "muddy_sand", "sand", "gravel", "cob_boulder", "rock")
 
-# Initialize list to store RMSE matrices per sediment
+# Initialise list to store RMSE matrices per seabed
 evalList <- lapply(sediments, function(x) matrix(NA, nrow = K, ncol = 1, dimnames = list(1:K, "GAM")))
 names(evalList) <- sediments
 
@@ -763,15 +699,52 @@ acc.up <- acc.comb + (acc.sd / sqrt(length(substrata)) * 1.96)
 acc.lo <- acc.comb - (acc.sd / sqrt(length(substrata)) * 1.96)
 
 # Plot results
-plot(p.vals, acc.comb, type='l', ylim=c(0,1), lwd=3, xlim=c(0,1.1), xlab="Probability Threshold", ylab="Accuracy")
-lines(p.vals, acc.up, lty=2, lwd=2)
-lines(p.vals, acc.lo, lty=2, lwd=2)
+# Optional: save as PDF
+#pdf(here("figures/4_Precision_vs_Accuracy.pdf"), width = 5, height = 5)
+
+prec <- rev(p.vals)
+
+plot(prec, acc.comb,
+     type='l', ylim=c(0,1), lwd=3, xlim=c(0,1.1),
+     xlab='Precision', ylab='Accuracy')
+
+# Find optimum point on mean line for all seabed types
+dist <- sqrt((1 - prec)^2 + (1 - acc.comb)^2)
+idx <- which.min(dist)
+
+# Add point
+points(prec[idx],
+       acc.comb[idx],
+       pch=18,
+       cex=2,
+       col="black")
+
 for (j in 1:ncol(overall.acc)) {
-  lines(p.vals, overall.acc[,j], col=substratum_cols[j], lwd=2)
-  best.i <- which.max(overall.acc[,j])
-  points(p.vals[best.i], overall.acc[best.i,j], pch=18, cex=2, col=substratum_cols[j])
-  text(p.vals[best.i]+0.02, overall.acc[best.i,j]+0.03, labels=round(overall.acc[best.i,j], 2), col=substratum_cols[j])
+
+    lines(prec,
+          overall.acc[,j],
+          col=adjustcolor(test.cols[j], alpha.f=0.5),
+          lwd=2)
+
+    # Find optimum point for these lines
+    dist <- sqrt((1 - prec)^2 +
+                 (1 - overall.acc[,j])^2)
+    idx <- which.min(dist)
+
+    points(prec[idx],
+           overall.acc[idx,j],
+           pch=18,
+           cex=2,
+           col=adjustcolor(test.cols[j], alpha.f=0.5))
 }
+
+lines(prec, acc.comb,
+     lwd=3 )
+lines(prec, acc.up, lty=2, lwd=2, col='grey40')
+lines(prec, acc.lo, lty=2, lwd=2, col='grey40')
+
+#dev.off()
+
 
 # Add overall max point
 best.overall <- which.max(acc.comb)
@@ -780,138 +753,56 @@ text(p.vals[best.overall]+0.05, acc.comb[best.overall]+0.05, labels=round(acc.co
 
 legend('bottomright', legend=substrata, fill=substratum_cols, bg='white')
 
+######################################################### Table for working out the optimal values
+line.names <- c("Combined",
+                "mud",
+                "muddy-sand",
+                "sand",
+                "gravel",
+                "cobble-boulder",
+                "rock")
+
+# Main (black) line
+dist <- sqrt((1 - prec)^2 + (1 - acc.comb)^2)
+idx <- which.min(dist)
+
+opt.points <- data.frame(
+  Line = line.names[1],
+  Precision = prec[idx],
+  Accuracy = acc.comb[idx],
+  Distance = dist[idx]
+)
+
+# Individual habitat lines
+for (j in 1:ncol(overall.acc)) {
+
+  dist <- sqrt((1 - prec)^2 + (1 - overall.acc[,j])^2)
+  idx <- which.min(dist)
+
+  opt.points <- rbind(
+    opt.points,
+    data.frame(
+      Line = line.names[j + 1],
+      Precision = prec[idx],
+      Accuracy = overall.acc[idx, j],
+      Distance = dist[idx]
+    )
+  )
+}
+
+# Round values for display
+opt.points$Precision <- round(opt.points$Precision, 3)
+opt.points$Accuracy  <- round(opt.points$Accuracy, 3)
+opt.points$Distance  <- round(opt.points$Distance, 3)
+
+print(opt.points)
+
+
+
+
+
 # AUC calculations
-auc.comb <- MESS::auc(p.vals, acc.comb, type = "linear")
-auc.indiv <- sapply(1:ncol(overall.acc), function(x) flux::auc(p.vals, overall.acc[,x]))
-
-# Best thresholds per substratum
-best.thresholds <- p.vals[apply(overall.acc, 2, which.max)]
-names(best.thresholds) <- substrata
-
-# Summaries
-cat("\nMean optimal threshold:", mean(best.thresholds), "\n")
-cat("Mean AUC:", mean(auc.indiv), "\n")
-auc.indiv
-
-
-
-#######################
-# Estimate finite difference derivative
-acc.diff <- diff(acc.comb) / diff(p.vals)
-
-# Find index where derivative is closest to 1
-target.i <- which.min(abs(acc.diff - 1))
-
-# Get corresponding threshold and accuracy
-target.threshold <- p.vals[target.i]
-target.acc <- acc.comb[target.i]
-
-# Plot point on curve
-points(target.threshold, target.acc, pch=8, col="red", cex=2)
-text(target.threshold+0.02, target.acc+0.04, 
-     labels=paste0("dA/dT ≈ 1 @ T=", round(target.threshold, 2)), col="red", cex=0.9)
-
-# Report result
-cat("At threshold ≈", round(target.threshold, 3), "slope ≈ 1 and accuracy ≈", round(target.acc, 3), "\n")
-
-
-for (j in 1:ncol(overall.acc)) {
-  acc.diff <- diff(overall.acc[,j]) / diff(p.vals)
-  target.i <- which.min(abs(acc.diff - 1))
-  
-  points(p.vals[target.i], overall.acc[target.i, j], pch=4, col=substratum_cols[j], cex=1.5)
-  text(p.vals[target.i]+0.015, overall.acc[target.i, j]-0.03,
-       labels=paste0("T=", round(p.vals[target.i],2)), col=substratum_cols[j], cex=0.8)
-}
-
-
-```
-
-
-# fitted with smoothers for easier graph
-```{r}
-dev.off()
-
-# Fit a smoothing spline to the accuracy vs threshold curve
-spline.fit <- smooth.spline(p.vals, acc.comb, spar=0.7)
-
-# Predict derivative (1st derivative) at all thresholds
-spline.deriv <- predict(spline.fit, p.vals, deriv=1)
-
-# Find where derivative is closest to 1
-target.i <- which.min(abs(spline.deriv$y - 1))
-target.threshold <- p.vals[target.i]
-target.acc <- predict(spline.fit, target.threshold)$y
-
-# Plot mean accuracy curve
-plot(p.vals, acc.comb, type='l', ylim=c(0,1), lwd=3, xlim=c(0,1.1),
-     xlab="Probability Threshold", ylab="Accuracy")
-lines(p.vals, acc.up, lty=2, lwd=2)
-lines(p.vals, acc.lo, lty=2, lwd=2)
-lines(spline.fit, col="blue", lwd=2)
-
-# Add point where slope ≈ 1
-points(target.threshold, target.acc, pch=8, col="red", cex=2)
-text(target.threshold+0.02, target.acc+0.04, 
-     labels=paste0("Slope ≈ 1 @ T=", round(target.threshold, 2)), col="red", cex=0.9)
-
-# Optional: plot derivative curve for reference
-plot(p.vals, spline.deriv$y, type='l', col="darkgreen", lwd=2,
-     xlab="Threshold", ylab="d(Accuracy)/d(Threshold)",
-     main="Derivative of Accuracy vs Threshold")
-abline(h=1, lty=2, col="red")
-abline(v=target.threshold, lty=3, col="grey")
-points(target.threshold, spline.deriv$y[target.i], pch=8, col="red", cex=2)
-
-####
-
-# Plot base: mean accuracy and CI
-plot(p.vals, acc.comb, type='l', ylim=c(0,1), lwd=3, xlim=c(0,1.1),
-     xlab="Probability Threshold", ylab="Accuracy")
-lines(p.vals, acc.up, lty=2, lwd=2)
-lines(p.vals, acc.lo, lty=2, lwd=2)
-
-# Storage vectors
-slope1.thresholds <- numeric(ncol(overall.acc))
-slope1.accs <- numeric(ncol(overall.acc))
-
-# Loop through each substratum
-for (j in 1:ncol(overall.acc)) {
-  
-  # Fit smoothing spline for substratum j
-  spline.fit <- smooth.spline(p.vals, overall.acc[,j], spar=0.7)
-  
-  # Predict first derivative
-  spline.deriv <- predict(spline.fit, p.vals, deriv=1)
-  
-  # Find where derivative ≈ 1
-  target.i <- which.min(abs(spline.deriv$y - 1))
-  target.threshold <- p.vals[target.i]
-  target.acc <- predict(spline.fit, target.threshold)$y
-  
-  # Store values
-  slope1.thresholds[j] <- target.threshold
-  slope1.accs[j] <- target.acc
-  
-  # Plot substratum accuracy curve
-  lines(p.vals, overall.acc[,j], col=substratum_cols[j], lwd=2)
-  
-  # Plot point at max accuracy
-  best.i <- which.max(overall.acc[,j])
-  points(p.vals[best.i], overall.acc[best.i,j], pch=18, cex=2, col=substratum_cols[j])
-  
-  # Plot slope ≈ 1 point
-  points(target.threshold, target.acc, pch=8, col=substratum_cols[j], cex=2)
-  
-  # Label slope ≈ 1 point
-  text(target.threshold+0.02, target.acc+0.03, 
-       labels=paste0("T=", round(target.threshold, 2)), col=substratum_cols[j], cex=0.8)
-}
-
-# Optional: Print thresholds and accuracies where slope ≈ 1 for each substratum
-slope1.thresholds
-slope1.accs
-
+MESS::auc(p.vals, acc.comb, type = "linear")
 
 ```
 
@@ -921,7 +812,8 @@ slope1.accs
 # combined map with informed thresholds
 ```{r combined map}
 
-slope1.thresholds <- c(0.1, 0.27, 0.12, 0.10, 0.17, 0.09)  # example values
+slope1.thresholds <- c(1-opt.points$Precision[-1])  # example values from above table
+# or you could use another informed, sensible value. For example the global average from the black line in the plot above
 
 # Name rasters and matching thresholds in a named list
 substratum_rasters <- list(
@@ -949,7 +841,6 @@ rock.trim        <- substratum_trimmed$rock
 
 
 
-#### maybe use this to go from test cols 1 to white to the shade required 1st try just the colour with an alpha value
 test.cols <- c(
      rgb(253,192,134, maxColorValue = 255),
      rgb(127,201,127, maxColorValue = 255),
@@ -973,7 +864,7 @@ rock.alt<- colorRampPalette(c('lightsteelblue2', test.cols[6], substratum_cols[6
 
 
 # Optional: save as PDF
-#pdf(here("figures/X_combined_prediction.pdf"), width = 5, height = 5)
+#pdf(here("figures/5_combined_prediction.pdf"), width = 5, height = 5)
  
  plot_land(land.wr, Wr.bound, depth.heat)
 
@@ -1002,8 +893,8 @@ plot(st_geometry(sub.sf23), pch=19, add=T, col=
        substratum_cols[sub.sf23$Substratum2], cex=0.8)
 
 plot(st_geometry(sub.sf23), pch=19, add=T, col=
-       substratum_cols[c(3,4,5)][sub.sf23$Substratum3], cex=0.5)
-# Optional: close PDF device
+       substratum_cols[c(2,3,4,5)][sub.sf23$Substratum3], cex=0.5)
+
 # dev.off()
 
 
@@ -1028,14 +919,11 @@ gravel.alt.single, cob_bol.alt.single, rock.alt.single)
 
 
 # Optional: save as PDF
-#pdf(here("figures/2_rock_prediction.pdf"), width = 5, height = 5)
+#pdf(here("figures/5_legend.pdf"), width = 5, height = 5)
 
 par(mar=c(0,0,0,0)+0.1)
 
 legend('center', bg='white', legend=leg, fill= leg.cols)
-
-# Optional: close PDF device
-# dev.off()
 
 #dev.off()
 
