@@ -32,20 +32,20 @@ These data include geolocated seabed classifications identified from Stereo Bait
 
 ## How to Reproduce the Analysis
 
-### 1️⃣ Clone this repository:
+### Clone this repository:
 ```bash
 git clone https://github.com/NeilMBurns/Wester_Ross_seabed_map.git
 cd Wester_Ross_seabed_map
 ```
 
-### 2️⃣ Install R dependencies:
+### Install R dependencies:
 From within R:
 ```R
 install.packages(c("sf", "flux", "RColorBrewer", "mgcv", "fields", "terra", "here", "dplyr", "rnaturalearth", "rnaturalearthdata", "prettymapr"))
 ```
 Optionally use `renv` or `packrat` for environment management.
 
-### 3️⃣ Open `GAM_predicted_seabed_maps.Rmd` in RStudio and Knit or run code chunks sequentially.
+### Open `GAM_predicted_seabed_maps.Rmd` in RStudio and Knit or run code chunks sequentially.
 
 This script:
 - Reads and prepares the seabed classification data
