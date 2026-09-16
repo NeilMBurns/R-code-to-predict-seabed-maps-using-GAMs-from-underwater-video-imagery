@@ -81,16 +81,16 @@ You are free to use, share and adapt the materials, provided appropriate credit 
 If you use these materials, please cite:
 
 ```
-Burns, N.M., Bailey, D.M. and Hopkins, C.R.  (2025). Predicting seabed maps from underwater video imagery using GAMs in a Scottish Sea Loch. [Journal]. DOI to follow.
+Burns, N.M., Bailey, D.M. and Hopkins, C.R.  (2025). Predicting seabed maps from underwater video imagery using GAMs in a Scottish Sea Loch. Geosci. Data J. DOI to follow.
 ```
 
 BibTeX:
 ```bibtex
-@article{Burns2025sebedmap,
+@article{Burns2026sebedmap,
   title={Predicting seabed maps from underwater video imagery using GAMs in a Scottish Sea Loch.},
   author={Burns, N.M. and Bailey, D.M. and Hopkins, C.R.},
-  journal={[Journal]},
-  year={2025},
+  journal={Geosci. Data J.},
+  year={2026},
   doi={DOI to follow}
 }
 ```
