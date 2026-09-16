@@ -5,7 +5,7 @@ Repository containing analysis code, and links to the data supporting the paper:
 
 **Predicting seabed maps using GAMs from underwater video imagery in a Scottish Sea Loch**  
 Burns, N.M., Bailey, D.M. and Hopkins, C.R.   
-Submitted to *Geosci. Data J.*, 2025  
+Submitted to *Geosci. Data J.*, 2026  
 [DOI to follow]
 
 ---
